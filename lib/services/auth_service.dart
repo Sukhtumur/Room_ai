@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide Provider;
@@ -67,9 +66,9 @@ class AuthService {
   // Sign in with Apple
   Future<AuthResponse?> signInWithApple() async {
     try {
-      // Check if Apple Sign In is available (mainly for iOS)
+      // Check if Apple Sign In is available
       final isAvailable = await SignInWithApple.isAvailable();
-      if (!isAvailable && !Platform.isIOS) {
+      if (!isAvailable) {
         throw Exception('Sign in with Apple is not available on this device');
       }
       
@@ -80,6 +79,10 @@ class AuthService {
           AppleIDAuthorizationScopes.fullName,
         ],
       );
+      
+      if (appleCredential.identityToken == null) {
+        throw Exception('Failed to get identity token from Apple');
+      }
       
       // Use the Apple credentials to sign in with Supabase
       return await _supabaseClient.auth.signInWithIdToken(

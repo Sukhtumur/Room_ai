@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		ShOAi+hhzmAwJ8UtbyD/iH3LIk0=
+		6KeLlq4dxkTNsoCoQ+Cy7/pVxCY=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		JV9EXGcs6nxV682qEKe+twDjcBY=
+		60zG3cJ2DFOnvppwY9ZEVP/CYmU=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -22,7 +22,7 @@
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		G/tBPpFrX7f3+tjL3yL7cSjQKFY=
+		dXkm0Ea+KvnSO3XG2M/YfoUmURE=
 		</data>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
 		<data>
@@ -32,6 +32,22 @@
 		<data>
 		c8wzJLudiNdyhAoMHLyZr5zGNC0=
 		</data>
+		<key>flutter_assets/assets/images/exterior_redesign.png</key>
+		<data>
+		cdYyQCOLelP0qZjQW+9nG6QFdXE=
+		</data>
+		<key>flutter_assets/assets/images/floor_plan.png</key>
+		<data>
+		/nF5zFDZsLpxX1BJSiNMFaaj1o4=
+		</data>
+		<key>flutter_assets/assets/images/furniture_search.png</key>
+		<data>
+		05PUCAHuR2p7ger0MmS7qoJ0YVU=
+		</data>
+		<key>flutter_assets/assets/images/interior_redesign.png</key>
+		<data>
+		IvktfOjbSKLGdscMnWDcQBqxVoE=
+		</data>
 		<key>flutter_assets/assets/images/minimalistic.jpg</key>
 		<data>
 		eQTcEmHJY5TL81ldHl7vKq7EA8Q=
@@ -40,17 +56,45 @@
 		<data>
 		0j/p+bmh3/r7oIHoQh0mQ2UoLUs=
 		</data>
+		<key>flutter_assets/assets/images/onboarding1.png</key>
+		<data>
+		o8vUt1uAc3IS37XoN8JTRnPMrIY=
+		</data>
+		<key>flutter_assets/assets/images/onboarding2.png</key>
+		<data>
+		O5CauLHhsAeAn7IIvecCYvtIXZo=
+		</data>
+		<key>flutter_assets/assets/images/onboarding3.png</key>
+		<data>
+		YMUCPx9H/XS6V38RDQ+Lgd3A1es=
+		</data>
+		<key>flutter_assets/assets/images/paint_walls.png</key>
+		<data>
+		rZ7mHMrxTURakW8SqAge+5xbmLU=
+		</data>
+		<key>flutter_assets/assets/images/replace_object.png</key>
+		<data>
+		+gF5Q0HSd5DHY3rLAdwTP8rGj1o=
+		</data>
+		<key>flutter_assets/assets/images/style_transfer.png</key>
+		<data>
+		vV82dOTRoqY14JM4nptSiRv98B4=
+		</data>
+		<key>flutter_assets/assets/images/virtual_staging.png</key>
+		<data>
+		bipebfDk2VNJFKRbBvY1LX44aqY=
+		</data>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
 		<data>
 		/CUoTuPQqqdexfyOT9lpJhV+2MQ=
 		</data>
 		<key>flutter_assets/isolate_snapshot_data</key>
 		<data>
-		J3OKveu3/udFiB8O6yi68rDVWOY=
+		qWRCYkB2ANaCGuWJ6K6EbAqreNE=
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		WrYtVSd6rGo1iuS43wxYwqaC9pY=
+		Ebdpnpsi+cfz2n8ZNgDWJedWCJU=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -62,7 +106,7 @@
 		</data>
 		<key>flutter_assets/vm_snapshot_data</key>
 		<data>
-		6f33nJbLQOxwLNQ7Pq7TZR9ENuo=
+		dY+ispxF8H6eOleDiynDNAGe7Jg=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -71,14 +115,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			wZ/HCW8IhYNC7K5LkWUnmgr6xK5y4khD7Lfsqfkh6+g=
+			Kb1JY7/LcDyO8MwCYhfhd6hvM3DK4ZlVjtxSXQ42Gww=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			D9XSDQhsoeWbAz4tUabkg4NCxux+0PDrFfEHXMdb1WU=
+			6jZxEvj+ymr25FRY6anZdfW0YsFu0ETIvt/t3pAjmcg=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -92,7 +136,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			T1WGEXmwDYxFrS3q/vH9Dtp8Xooaw5OpXTrEYPgSSS0=
+			4xW9W/bEiYXvGmx/BKcqtsgxXuYXbq90JRVb8qxMolM=
 			</data>
 		</dict>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
@@ -109,6 +153,34 @@
 			ohcA1uHKc6W8Ta4pGpsou9Dyy0YqgwAlVwLREm+xo1w=
 			</data>
 		</dict>
+		<key>flutter_assets/assets/images/exterior_redesign.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			jlwylS7vwuitpSM5puOJbzpvo5poV2zIGYEolPblVC0=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/floor_plan.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			FbCjWDPoE86lvBMvQiZbWbePGm1OllJ8bjHhb+4SVX4=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/furniture_search.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			1NA2eVnApoBGnVhT/nTPGbyl6mztwVsyjRowYsXF8IU=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/interior_redesign.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			XxawnffXyPJuvt3BXxB/jPsFmOodJNCUhz6kqEmIln0=
+			</data>
+		</dict>
 		<key>flutter_assets/assets/images/minimalistic.jpg</key>
 		<dict>
 			<key>hash2</key>
@@ -123,6 +195,55 @@
 			HpuQD9kEptWjne+hT12AQlMpxCeapH54iP3T9vTw+ug=
 			</data>
 		</dict>
+		<key>flutter_assets/assets/images/onboarding1.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			l0MxJpYyEKPQZFtcWmDS01gADeBBqnR/RgMGFHQlJ5g=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/onboarding2.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			zgVeAy4tcOqjO+a5jWD0FJ616I0lx0vAsQWjSVtQ6dw=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/onboarding3.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			BZHbTdXmZShuCNsP5FXenxcFwT+BjGxk2Ih05mRyYgI=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/paint_walls.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			u8xRWQtaglG51DNChL5ZuiVGXrkOTl6cInBsSdDAODc=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/replace_object.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			yYZTppoI3m1lilsHgFuRqx/i6JcTTe/oUqESIScUo2o=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/style_transfer.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			kjUBaaOv29nLkkWQNXx1zOf092ch7zQeXINZmuRRMxk=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/virtual_staging.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			pqXnDgxCJD6219nEZQEwTBNzsMV7RAf3KqdGTuy0SRQ=
+			</data>
+		</dict>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
 		<dict>
 			<key>hash2</key>
@@ -134,14 +255,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ykVvWbyyNFkOsE/pzKdeOTPYsF+loL8qrTBq1TF84es=
+			SOJ5rERauzhaCV7eUD78eXv8seogEgSQP/xrVhwDCq8=
 			</data>
 		</dict>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			vEIyrdYxhY6NC1XGxqH754tsd00VnwDXugU43n3tRZc=
+			GDHq7hf4uE+N9bnbUdLARP+IBejXn0SgBRdGlbX3oFY=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
@@ -162,7 +283,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			EkAQI7At/OAUaTSQUy3t6/4PpHWrvbPs+YdJHmzJ978=
+			pKsT4eop3vfHEYhT5SQiPgfEGr7URpfsdddh2h4sDdY=
 			</data>
 		</dict>
 	</dict>

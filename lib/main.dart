@@ -5,12 +5,13 @@ import 'screens/photo_upload_screen.dart';
 import 'screens/room_selection_screen.dart';
 import 'screens/style_selection_screen.dart';
 import 'screens/results_screen.dart';
-import 'screens/login_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/prompt_input_screen.dart';
 import 'state/app_state.dart';
 import 'services/supabase_service.dart';
-import 'services/auth_service.dart';
 import 'utils/constants.dart';
+import 'screens/building_type_screen.dart';
+import 'screens/color_palette_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +31,8 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -40,25 +43,16 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Initialize the user when the app starts.
-    _initFuture = _initUser();
+    _initFuture = _registerDeviceIfNeeded();
   }
-  Future<void> _initUser() async {
+
+  Future<void> _registerDeviceIfNeeded() async {
+    // Wait for AppState to initialize deviceId
+    await Future.delayed(const Duration(milliseconds: 100));
     final appState = provider_pkg.Provider.of<AppState>(context, listen: false);
-    try {
-      // Check if user is already authenticated
-      if (AuthService.instance.isSignedIn) {
-        // User is already signed in, use their Supabase ID
-        appState.setUserId(AuthService.instance.currentUser!.id);
-        appState.setAnonymous(false);
-      } else {
-        // Use anonymous ID
-        await SupabaseService().createAnonymousUser(appState.userId);
-        appState.setAnonymous(true);
-      }
-    } catch (e) {
-      print("Failed to initialize user: $e");
-    }
+    
+    // Register device in Supabase if needed
+    await SupabaseService().registerDevice(appState.deviceId);
   }
   
   @override
@@ -67,12 +61,13 @@ class _MyAppState extends State<MyApp> {
       future: _initFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return MaterialApp(
+          return const MaterialApp(
             home: Scaffold(
               body: Center(child: CircularProgressIndicator()),
             ),
           );
         }
+        
         return MaterialApp(
           title: AppConstants.appTitle,
           theme: ThemeData(
@@ -86,14 +81,20 @@ class _MyAppState extends State<MyApp> {
               case '/':
                 page = PhotoUploadScreen();
                 break;
-              case '/login':
-                page = LoginScreen();
-                break;
               case '/room-selection':
                 page = RoomSelectionScreen();
                 break;
+              case '/building-type':
+                page = BuildingTypeScreen();
+                break;
               case '/style-selection':
                 page = StyleSelectionScreen();
+                break;
+              case '/color-palette':
+                page = ColorPaletteScreen();
+                break;
+              case '/prompt-input':
+                page = PromptInputScreen();
                 break;
               case '/results':
                 page = ResultsScreen();
@@ -104,15 +105,15 @@ class _MyAppState extends State<MyApp> {
               default:
                 // Fallback for unknown routes
                 page = Scaffold(
-                  appBar: AppBar(title: Text('Page Not Found')),
-                  body: Center(
+                  appBar: AppBar(title: const Text('Page Not Found')),
+                  body: const Center(
                     child: Text('The requested page does not exist.'),
                   ),
                 );
             }
             return MaterialPageRoute(builder: (_) => page);
           },
-          home: AuthService.instance.isSignedIn ? PhotoUploadScreen() : LoginScreen(),
+          home: PhotoUploadScreen(),
         );
       },
     );

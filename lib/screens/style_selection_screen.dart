@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../state/app_state.dart';
 
 class StyleSelectionScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> styles = [
+  final List<Map<String, dynamic>> styles = const [
     {'name': 'Modern', 'image': 'assets/images/modern.jpg'},
     {'name': 'Minimalistic', 'image': 'assets/images/minimalistic.jpg'},
     {'name': 'Bohemian', 'image': 'assets/images/bohemian.jpg'},
@@ -11,6 +11,8 @@ class StyleSelectionScreen extends StatelessWidget {
     {'name': 'Scandinavian', 'image': 'assets/images/minimalistic.jpg'}, // Reusing image as placeholder
     {'name': 'Rustic', 'image': 'assets/images/bohemian.jpg'}, // Reusing image as placeholder
   ];
+
+  const StyleSelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +22,9 @@ class StyleSelectionScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Select Style for $selectedRoom')),
       body: GridView.builder(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         itemCount: styles.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
@@ -34,14 +36,8 @@ class StyleSelectionScreen extends StatelessWidget {
             onTap: () {
               appState.setStyle(style['name']);
               
-              // If we have an image, room type, and style, we can proceed to generate
-              if (appState.image != null && appState.roomType != null && appState.style != null) {
-                Navigator.pushNamed(context, '/results');
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Please select an image, room type, and style')),
-                );
-              }
+              // Navigate to color palette selection instead of results
+              Navigator.pushNamed(context, '/color-palette');
             },
             child: Card(
               clipBehavior: Clip.antiAlias,
@@ -62,11 +58,11 @@ class StyleSelectionScreen extends StatelessWidget {
                     right: 0,
                     child: Container(
                       color: Colors.black54,
-                      padding: EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Text(
                         style['name'],
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

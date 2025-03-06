@@ -3,61 +3,61 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseService {
   final SupabaseClient _supabaseClient = Supabase.instance.client;
 
-  // Create an anonymous user
-  Future<void> createAnonymousUser(String userId) async {
+  // Register a device
+  Future<void> registerDevice(String deviceId) async {
     try {
-      // Check if user already exists
+      // Check if device already exists
       final response = await _supabaseClient
-          .from('users')
+          .from('devices')
           .select()
-          .eq('id', userId)
-          .single();
+          .eq('device_id', deviceId)
+          .maybeSingle();
       
       if (response == null) {
-        // User doesn't exist, create a new one
-        await _supabaseClient.from('users').upsert({
-          'id': userId,
+        // Device doesn't exist, create a new one
+        await _supabaseClient.from('devices').insert({
+          'device_id': deviceId,
           'created_at': DateTime.now().toIso8601String(),
-          'is_anonymous': true,
-        });
-      }
-    } catch (e) {
-      // If the user doesn't exist, insert a new record
-      if (e is PostgrestException) {
-        await _supabaseClient.from('users').upsert({
-          'id': userId,
-          'created_at': DateTime.now().toIso8601String(),
-          'is_anonymous': true,
+          'last_active': DateTime.now().toIso8601String(),
         });
       } else {
-        print("Error creating anonymous user: $e");
-        rethrow;
+        // Update last active timestamp
+        await _supabaseClient
+            .from('devices')
+            .update({'last_active': DateTime.now().toIso8601String()})
+            .eq('device_id', deviceId);
       }
+    } catch (e) {
+      print("Error registering device: $e");
     }
   }
 
   // Save a design
   Future<void> saveDesign({
-    required String userId,
-    required String roomType,
-    required String style,
+    required String deviceId,
+    required String? roomType,
+    required String? style,
     required String imageUrl,
+    required String? featureType,
+    required String? prompt,
   }) async {
     await _supabaseClient.from('designs').insert({
-      'user_id': userId,
-      'room_type': roomType,
-      'style': style,
+      'device_id': deviceId,
+      'room_type': roomType ?? 'Not specified',
+      'style': style ?? 'Not specified',
       'image_url': imageUrl,
+      'feature_type': featureType ?? 'Interior Design',
+      'prompt': prompt,
       'created_at': DateTime.now().toIso8601String(),
     });
   }
 
   // Get user's designs
-  Future<List<Map<String, dynamic>>> getUserDesigns(String userId) async {
+  Future<List<Map<String, dynamic>>> getUserDesigns(String deviceId) async {
     final response = await _supabaseClient
         .from('designs')
         .select()
-        .eq('user_id', userId)
+        .eq('device_id', deviceId)
         .order('created_at', ascending: false);
     
     return List<Map<String, dynamic>>.from(response);

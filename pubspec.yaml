@@ -23,6 +23,8 @@ dependencies:
   url_launcher: ^6.1.11
   path_provider: ^2.0.15
   share_plus: ^7.0.2
+  shared_preferences: ^2.2.0
+  image: ^4.0.17
 
 dev_dependencies:
   flutter_test:

@@ -8,6 +8,8 @@ import '../services/supabase_service.dart';
 import '../utils/url_launcher_utils.dart';
 
 class ResultsScreen extends StatefulWidget {
+  const ResultsScreen({super.key});
+
   @override
   _ResultsScreenState createState() => _ResultsScreenState();
 }
@@ -45,8 +47,12 @@ class _ResultsScreenState extends State<ResultsScreen> {
     try {
       final generatedUrl = await AIService.generateDesign(
         image: appState.image!,
-        roomType: appState.roomType ?? "Living Room",
-        style: appState.style ?? "Modern",
+        roomType: appState.roomType,
+        style: appState.style,
+        featureType: appState.featureType,
+        prompt: appState.prompt,
+        colorPalette: appState.colorPalette,
+        buildingType: appState.buildingType,
       );
       
       if (generatedUrl != null) {
@@ -75,7 +81,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     
     if (appState.generatedImageUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No design to save yet. Please generate a design first.')),
+        const SnackBar(content: Text('No design to save yet. Please generate a design first.')),
       );
       return;
     }
@@ -86,10 +92,12 @@ class _ResultsScreenState extends State<ResultsScreen> {
     
     try {
       await SupabaseService().saveDesign(
-        userId: appState.userId,
+        deviceId: appState.deviceId,
         roomType: appState.roomType ?? 'Room',
         style: appState.style ?? 'Style',
         imageUrl: appState.generatedImageUrl!,
+        featureType: appState.featureType ?? 'Interior Design',
+        prompt: appState.prompt,
       );
       
       setState(() {
@@ -98,7 +106,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
       });
       
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Design saved successfully!')),
+        const SnackBar(content: Text('Design saved successfully!')),
       );
     } catch (e) {
       setState(() {
@@ -116,10 +124,10 @@ class _ResultsScreenState extends State<ResultsScreen> {
     final appState = Provider.of<AppState>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppConstants.appTitle),
+        title: const Text(AppConstants.appTitle),
         actions: [
           if (_isGenerating)
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(right: 16),
               child: Center(child: SizedBox(
                 width: 20, 
@@ -132,14 +140,14 @@ class _ResultsScreenState extends State<ResultsScreen> {
             )
           else
             IconButton(
-              icon: Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh),
               tooltip: 'Regenerate Design',
               onPressed: () {
                 _generateImage(appState);
               },
             ),
           IconButton(
-            icon: Icon(Icons.person),
+            icon: const Icon(Icons.person),
             tooltip: 'View Profile',
             onPressed: () {
               Navigator.pushNamed(context, '/profile');
@@ -147,237 +155,227 @@ class _ResultsScreenState extends State<ResultsScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              "Before vs. After",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                if (appState.image != null)
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          const Text(
+            "Before vs. After",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final imageWidth = (constraints.maxWidth - 8) / 2;
+              final imageHeight = imageWidth * 0.75;
+              
+              return Row(
+                children: [
+                  if (appState.image != null)
+                    Expanded(
+                      child: Column(
+                        children: [
+                          const Text("Before", style: TextStyle(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              appState.image!,
+                              height: imageHeight,
+                              width: imageWidth,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       children: [
-                        Text("Before", style: TextStyle(fontWeight: FontWeight.bold)),
-                        SizedBox(height: 8),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            appState.image!,
-                            height: 200,
-                            fit: BoxFit.cover,
+                        const Text("After", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        if (_isGenerating)
+                          Container(
+                            height: imageHeight,
+                            width: imageWidth,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        else if (_generationError != null)
+                          Container(
+                            height: imageHeight,
+                            width: imageWidth,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  _generationError!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.red[700]),
+                                ),
+                              ),
+                            ),
+                          )
+                        else if (appState.generatedImageUrl != null)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              appState.generatedImageUrl!,
+                              height: imageHeight,
+                              width: imageWidth,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  height: imageHeight,
+                                  width: imageWidth,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes!
+                                          : null,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        else
+                          Container(
+                            height: imageHeight,
+                            width: imageWidth,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Center(
+                              child: Text("No image generated yet"),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text("After", style: TextStyle(fontWeight: FontWeight.bold)),
-                      SizedBox(height: 8),
-                      if (appState.generatedImageUrl != null)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            appState.generatedImageUrl!,
-                            height: 200,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Container(
-                                height: 200,
-                                color: Colors.grey[200],
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded / 
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      else
-                        Container(
-                          height: 200,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (_generationError != null)
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.error_outline, color: Colors.red, size: 40),
-                                      SizedBox(height: 8),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 16),
-                                        child: Text(
-                                          _generationError!,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          _generateImage(appState);
-                                        },
-                                        child: Text("Try Again"),
-                                      ),
-                                    ],
-                                  )
-                                else if (_isGenerating)
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      CircularProgressIndicator(),
-                                      SizedBox(height: 16),
-                                      Text("Generating design...", 
-                                        style: TextStyle(fontStyle: FontStyle.italic),
-                                      ),
-                                    ],
-                                  )
-                                else
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.image, color: Colors.grey, size: 40),
-                                      SizedBox(height: 8),
-                                      Text("Ready to generate", 
-                                        style: TextStyle(color: Colors.grey[600]),
-                                      ),
-                                      SizedBox(height: 8),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          _generateImage(appState);
-                                        },
-                                        child: Text("Generate Design"),
-                                      ),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
+                ],
+              );
+            }
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton.icon(
+                onPressed: _isSaving || _isGenerating ? null : _saveDesign,
+                icon: _isSaving
+                    ? Container(
+                        width: 24,
+                        height: 24,
+                        padding: const EdgeInsets.all(2.0),
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2,
                         ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 24),
-            Text(
-              "Product Recommendations",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
+                      )
+                    : const Icon(Icons.save),
+                label: Text(_designSaved ? 'Saved!' : 'Save Design'),
+              ),
+              ElevatedButton.icon(
+                onPressed: () {
+                  appState.resetState();
+                  Navigator.pushNamedAndRemoveUntil(
+                    context, 
+                    '/', 
+                    (route) => false
+                  );
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('New Design'),
+              ),
+            ],
+          ),
+          if (appState.featureType == 'Interior Design' || appState.featureType == 'Exterior Design')
             FutureBuilder<List<ProductRecommendation>>(
               future: _recommendationsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.red[50],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      "Error loading recommendations: ${snapshot.error}",
-                      style: TextStyle(color: Colors.red),
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                } else if (snapshot.hasError) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32.0),
+                    child: Center(
+                      child: Text(
+                        'Error loading recommendations: ${snapshot.error}',
+                        style: TextStyle(color: Colors.red[700]),
+                      ),
                     ),
                   );
-                }
-                final recommendations = snapshot.data ?? [];
-                if (recommendations.isEmpty) {
-                  return Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      "No product recommendations available. We're working on it!",
-                      textAlign: TextAlign.center,
-                    ),
+                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 32),
+                      const Text(
+                        "Product Recommendations",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      ...snapshot.data!.map((product) => _buildProductCard(product)),
+                    ],
                   );
+                } else {
+                  return const SizedBox.shrink();
                 }
-                return Column(
-                  children: recommendations.map((rec) {
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 8),
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.all(16),
-                        title: Text(
-                          rec.name,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Padding(
-                          padding: EdgeInsets.only(top: 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(rec.description),
-                              SizedBox(height: 8),
-                              Text(
-                                "Price: ${rec.price}",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        trailing: Icon(Icons.arrow_forward),
-                        onTap: () {
-                          UrlLauncherUtils.launchURL(context, rec.url);
-                        },
-                      ),
-                    );
-                  }).toList(),
-                );
               },
             ),
-            if (appState.generatedImageUrl != null)
-              Padding(
-                padding: EdgeInsets.only(top: 16),
-                child: ElevatedButton.icon(
-                  onPressed: _isSaving || _designSaved ? null : _saveDesign,
-                  icon: _isSaving 
-                    ? SizedBox(
-                        width: 20, 
-                        height: 20, 
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        )
-                      ) 
-                    : Icon(_designSaved ? Icons.check : Icons.save),
-                  label: Text(_designSaved ? 'Design Saved' : 'Save Design'),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductCard(ProductRecommendation product) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              product.name,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(product.description),
+            const SizedBox(height: 8),
+            Text(
+              'Price: ${product.price}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (product.url != null)    
+              TextButton(
+                onPressed: () => UrlLauncherUtils.launchURL(context, product.url!),
+                child: const Text('View Product'),
               ),
           ],
         ),
