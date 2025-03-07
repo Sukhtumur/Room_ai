@@ -16,15 +16,22 @@ import 'screens/color_palette_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Supabase
-  await Supabase.initialize(
-    url: AppConstants.supabaseUrl,
-    anonKey: AppConstants.supabaseAnonKey,
-  );
+  // Initialize services
+  await SupabaseService.initialize();
+  
+  // Create app state first
+  final appState = AppState();
+  
+  // Wait for device ID to be initialized
+  await appState.initializeDeviceId();
+  
+  // Test connection
+  final isConnected = await SupabaseService.checkConnection();
+  print("Database connected: $isConnected");
   
   runApp(
     provider_pkg.ChangeNotifierProvider(
-      create: (context) => AppState(),
+      create: (context) => appState,
       child: MyApp(),
     ),
   );

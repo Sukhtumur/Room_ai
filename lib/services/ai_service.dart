@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../utils/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
+import '../services/chatgpt_service.dart';
 
 class AIService {
   // Main method to handle all design types
@@ -18,26 +19,66 @@ class AIService {
   }) async {
     print("Starting image generation for feature: $featureType");
     
-    if (!image.existsSync()) {
-      print("Error: Image file does not exist at path: ${image.path}");
-      return null;
-    }
-    
-    // Convert image to PNG format first
-    final pngImage = await _convertToPng(image);
-    
-    switch (featureType) {
-      case 'Interior Design':
-        return _generateInteriorDesign(pngImage, roomType, style, colorPalette);
-      case 'Exterior Design':
-        return _generateExteriorDesign(pngImage, buildingType, style, colorPalette);
-      case 'Object Editing':
-        return _generateObjectEdit(pngImage, prompt);
-      case 'Paint & Color':
-        return _generatePaintColor(pngImage, prompt);
-      default:
-        print("Unknown feature type: $featureType");
+    try {
+      // First, generate a detailed description using ChatGPT
+      String basePrompt = "Describe in detail a $style style ";
+      
+      if (featureType == 'Interior Design') {
+        basePrompt += "$roomType with $colorPalette colors";
+      } else if (featureType == 'Exterior Design') {
+        basePrompt += "$buildingType exterior with $colorPalette colors";
+      }
+      
+      if (prompt != null && prompt.isNotEmpty) {
+        basePrompt += ". Include these details: $prompt";
+      }
+      
+      basePrompt += ". Make it detailed enough for an AI image generator to create a photorealistic image.";
+      
+      print("Generating detailed description with prompt: $basePrompt");
+      
+      // Get detailed description from ChatGPT
+      final detailedDescription = await ChatGPTService.getDetailedDescription(basePrompt);
+      
+      if (detailedDescription == null || detailedDescription.isEmpty) {
+        print("Failed to generate detailed description");
         return null;
+      }
+      
+      print("Generated description: $detailedDescription");
+      
+      // Now use DALL-E 3 to generate the image based on the detailed description
+      final uri = Uri.parse("https://api.openai.com/v1/images/generations");
+      
+      final response = await http.post(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${AppConstants.daliApiKey}"
+        },
+        body: jsonEncode({
+          "prompt": detailedDescription,
+          "n": 1,
+          "size": "1024x1024",
+          "model": "dall-e-3",
+          "quality": "hd"
+        })
+      );
+      
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data != null && data['data'] != null && data['data'].isNotEmpty) {
+          return data['data'][0]['url'];
+        }
+      }
+      
+      return null;
+    } catch (e) {
+      print("Error in generateDesign: $e");
+      return null;
     }
   }
   
@@ -46,42 +87,27 @@ class AIService {
     try {
       final tempDir = await getTemporaryDirectory();
       final pngPath = '${tempDir.path}/converted_image.png';
-      final bytes = await inputFile.readAsBytes();
-      final decodedImage = img.decodeImage(bytes);
-
-      if (decodedImage == null) {
-        print("Failed to decode image");
-        return inputFile;
-      }
-
-      // Resize to 1024x1024 (DALL-E 2 requirement)
-      final resizedImage = img.copyResize(decodedImage, width: 1024, height: 1024);
       
-      // Ensure alpha channel by creating a new RGBA image
+      // Create a blank RGBA image
       final rgbaImage = img.Image(width: 1024, height: 1024);
       
-      // Copy the image data
-      for (var y = 0; y < resizedImage.height; y++) {
-        for (var x = 0; x < resizedImage.width; x++) {
-          final pixel = resizedImage.getPixel(x, y);
-          rgbaImage.setPixel(x, y, pixel);
+      // Fill with white background
+      for (var y = 0; y < rgbaImage.height; y++) {
+        for (var x = 0; x < rgbaImage.width; x++) {
+          rgbaImage.setPixelRgba(x, y, 255, 255, 255, 255);
         }
       }
       
-      // Add a single transparent pixel to force RGBA format
-      if (rgbaImage.width > 0 && rgbaImage.height > 0) {
-        rgbaImage.setPixel(0, 0, img.ColorRgba8(255, 255, 255, 254));
-      }
-      
+      // Save as PNG
       final pngBytes = img.encodePng(rgbaImage);
       final pngFile = File(pngPath);
       await pngFile.writeAsBytes(pngBytes);
       
-      print("Converted and resized image to 1024x1024 PNG with alpha channel");
+      print("Created blank RGBA image");
       return pngFile;
     } catch (e) {
-      print("Error converting image to PNG: $e");
-      return inputFile;
+      print("Error creating RGBA image: $e");
+      throw Exception("Failed to create RGBA image");
     }
   }
   
@@ -94,15 +120,16 @@ class AIService {
   ) async {
     final uri = Uri.parse("https://api.openai.com/v1/images/edits");
     
-    // Create a mask specific to interior design
     final maskFile = await _createTransparentMask(image, featureType: 'Interior Design');
     
-    // Build a detailed prompt
-    String detailedPrompt = "Transform this $roomType into a $style style";
+    // Enhanced prompt with more specific color instructions
+    String detailedPrompt = "Transform this $roomType into a $style style interior";
     if (colorPalette != null && colorPalette.isNotEmpty) {
-      detailedPrompt += " with a $colorPalette color palette";
+      detailedPrompt += ", using predominantly $colorPalette colors for walls, furniture, and decor";
     }
-    detailedPrompt += ". Keep the same layout but completely redesign the furniture, decor, and finishes.";
+    detailedPrompt += ". Keep the same layout but redesign with new furniture, decor, and finishes that match this color scheme. Make it look realistic and professionally designed.";
+    
+    print("Generated prompt: $detailedPrompt"); // Debug print
     
     // Create multipart request for DALL-E 2 edits
     var request = http.MultipartRequest('POST', uri);
@@ -331,11 +358,43 @@ class AIService {
           }
         }
       } else if (featureType == 'Exterior Design') {
+        // For exterior, make facade areas transparent
+        for (var y = 200; y < 900; y++) {
+          for (var x = 200; x < 800; x++) {
+            mask.setPixel(x, y, img.ColorRgba8(255, 255, 255, 0));
+          }
+        }
+      } else if (featureType == 'Object Editing') {
+        // For object editing, create a smaller targeted area
+        for (var y = 400; y < 600; y++) {
+          for (var x = 400; x < 600; x++) {
+            mask.setPixel(x, y, img.ColorRgba8(255, 255, 255, 0));
+          }
+        }
+      } else if (featureType == 'Paint & Color') {
+        // For paint & color, target wall areas
+        for (var y = 0; y < 1024; y++) {
+          for (var x = 0; x < 1024; x++) {
+            // Skip center area (furniture)
+            if (!(x > 300 && x < 700 && y > 300 && y < 700)) {
+              mask.setPixel(x, y, img.ColorRgba8(255, 255, 255, 0));
+            }
+          }
+        }
+      } else {
+        // Default: make entire image transparent for full edit
+        for (var y = 0; y < mask.height; y++) {
+          for (var x = 0; x < mask.width; x++) {
+            mask.setPixel(x, y, img.ColorRgba8(255, 255, 255, 0));
+          }
+        }
+      }
+      
       // Save the mask
       final maskFile = File(maskPath);
       await maskFile.writeAsBytes(img.encodePng(mask));
       
-      print("Created transparent mask with alpha channel");
+      print("Created custom mask for $featureType");
       return maskFile;
     } catch (e) {
       print("Error creating mask: $e");

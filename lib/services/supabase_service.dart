@@ -1,13 +1,39 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../utils/constants.dart';
+import '../models/user_model.dart';
+import '../models/design_model.dart';
 
 class SupabaseService {
-  final SupabaseClient _supabaseClient = Supabase.instance.client;
-
+  static final supabase = Supabase.instance.client;
+  
+  // Initialize Supabase
+  static Future<void> initialize() async {
+    await Supabase.initialize(
+      url: AppConstants.supabaseUrl,
+      anonKey: AppConstants.supabaseAnonKey,
+      debug: true, // Set to false in production
+    );
+    print("Supabase initialized successfully");
+  }
+  
+  // Check connection
+  static Future<bool> checkConnection() async {
+    try {
+      // Simple query to check if connection works
+      final response = await supabase.from('users').select('id').limit(1).execute();
+      print("Supabase connection test: ${response.status}");
+      return response.status == 200;
+    } catch (e) {
+      print("Supabase connection error: $e");
+      return false;
+    }
+  }
+  
   // Register a device
   Future<void> registerDevice(String deviceId) async {
     try {
       // Check if device already exists
-      final response = await _supabaseClient
+      final response = await supabase
           .from('devices')
           .select()
           .eq('device_id', deviceId)
@@ -15,14 +41,14 @@ class SupabaseService {
       
       if (response == null) {
         // Device doesn't exist, create a new one
-        await _supabaseClient.from('devices').insert({
+        await supabase.from('devices').insert({
           'device_id': deviceId,
           'created_at': DateTime.now().toIso8601String(),
           'last_active': DateTime.now().toIso8601String(),
         });
       } else {
         // Update last active timestamp
-        await _supabaseClient
+        await supabase
             .from('devices')
             .update({'last_active': DateTime.now().toIso8601String()})
             .eq('device_id', deviceId);
@@ -41,7 +67,7 @@ class SupabaseService {
     required String? featureType,
     required String? prompt,
   }) async {
-    await _supabaseClient.from('designs').insert({
+    await supabase.from('designs').insert({
       'device_id': deviceId,
       'room_type': roomType ?? 'Not specified',
       'style': style ?? 'Not specified',
@@ -54,7 +80,7 @@ class SupabaseService {
 
   // Get user's designs
   Future<List<Map<String, dynamic>>> getUserDesigns(String deviceId) async {
-    final response = await _supabaseClient
+    final response = await supabase
         .from('designs')
         .select()
         .eq('device_id', deviceId)

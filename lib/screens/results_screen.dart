@@ -293,7 +293,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
               ),
               ElevatedButton.icon(
                 onPressed: () {
-                  appState.resetState();
+                  appState.reset();
                   Navigator.pushNamedAndRemoveUntil(
                     context, 
                     '/', 
@@ -372,11 +372,10 @@ class _ResultsScreenState extends State<ResultsScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            if (product.url != null)    
-              TextButton(
-                onPressed: () => UrlLauncherUtils.launchURL(context, product.url!),
-                child: const Text('View Product'),
-              ),
+            TextButton(
+              onPressed: () => UrlLauncherUtils.launchURL(context, product.url),
+              child: const Text('View Product'),
+            ),
           ],
         ),
       ),

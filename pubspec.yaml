@@ -25,6 +25,8 @@ dependencies:
   share_plus: ^7.0.2
   shared_preferences: ^2.2.0
   image: ^4.0.17
+  device_info_plus: ^8.2.2
+  collection: ^1.17.0
 
 dev_dependencies:
   flutter_test:
@@ -48,3 +50,8 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+
+dependency_overrides:
+  win32: 2.7.0  # Use a specific older version without UnmodifiableUint8ListView
+  collection: 1.16.0  # Pin collection to a compatible version
+  http_parser: 4.0.2  # Use an older version that's compatible with your dependencies

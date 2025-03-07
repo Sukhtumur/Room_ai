@@ -83,6 +83,45 @@ class ChatGPTService {
       return [];
     }
   }
+
+  static Future<String?> getDetailedDescription(String prompt) async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://api.openai.com/v1/chat/completions'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AppConstants.chatGptApiKey}',
+        },
+        body: jsonEncode({
+          'model': 'gpt-4',
+          'messages': [
+            {
+              'role': 'system',
+              'content': 'You are an expert interior designer and architect. Create detailed, vivid descriptions of spaces that can be used to generate photorealistic images.'
+            },
+            {
+              'role': 'user',
+              'content': prompt
+            }
+          ],
+          'max_tokens': 500,
+          'temperature': 0.7,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['choices'][0]['message']['content'];
+      } else {
+        print('Failed to get description: ${response.statusCode}');
+        print('Response: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error getting description: $e');
+      return null;
+    }
+  }
 }
 
 class ProductRecommendation {
