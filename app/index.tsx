@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppContext } from '@/app/context/AppContext';
+import { theme } from '@/app/utils/theme';
 
 export default function PhotoUploadScreen() {
   const { setImage, setFeatureType } = useAppContext();
@@ -168,47 +169,49 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon, col
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: theme.spacing.md,
     paddingTop: 60,
-    paddingBottom: 16,
-    backgroundColor: '#fff',
+    paddingBottom: theme.spacing.md,
+    backgroundColor: theme.colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.colors.border,
   },
   title: {
-    fontSize: 24,
+    fontSize: theme.typography.fontSize.xxl,
     fontWeight: 'bold',
+    color: theme.colors.text,
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: theme.spacing.md,
   },
   heading: {
-    fontSize: 24,
+    fontSize: theme.typography.fontSize.xl,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: theme.spacing.lg,
+    color: theme.colors.text,
   },
   subheading: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: theme.typography.fontSize.md,
+    color: theme.colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: theme.spacing.xl,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 16,
-    shadowColor: '#000',
+    padding: theme.spacing.md,
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.borderRadius.lg,
+    marginBottom: theme.spacing.md,
+    shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -217,21 +220,23 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 50,
     height: 50,
-    borderRadius: 25,
+    borderRadius: theme.borderRadius.circle,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: theme.spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
   },
   cardContent: {
     flex: 1,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: theme.typography.fontSize.lg,
     fontWeight: '600',
     marginBottom: 4,
+    color: theme.colors.text,
   },
   cardDescription: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: theme.typography.fontSize.sm,
+    color: theme.colors.textSecondary,
   },
 }); 

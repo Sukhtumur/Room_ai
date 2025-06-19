@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import SupabaseService from '@/app/services/supabaseService';
+import { theme } from '@/app/utils/theme';
 
 // Mock data for product recommendations
 const mockRecommendations = [
@@ -238,22 +239,23 @@ export default function ResultsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: theme.spacing.md,
     paddingTop: 60,
-    paddingBottom: 16,
-    backgroundColor: '#fff',
+    paddingBottom: theme.spacing.md,
+    backgroundColor: theme.colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.colors.border,
   },
   title: {
-    fontSize: 20,
+    fontSize: theme.typography.fontSize.xl,
     fontWeight: 'bold',
+    color: theme.colors.text,
   },
   content: {
     flex: 1,
@@ -261,7 +263,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     height: 300,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.colors.card,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -269,9 +271,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#666',
+    marginTop: theme.spacing.md,
+    fontSize: theme.typography.fontSize.md,
+    color: theme.colors.textSecondary,
   },
   resultImage: {
     width: '100%',

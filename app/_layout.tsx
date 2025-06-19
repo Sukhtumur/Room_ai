@@ -38,6 +38,18 @@ export default function RootLayout() {
     }
   }, [loaded, isReady]);
 
+  useEffect(() => {
+    const resetId = async () => {
+      if (isReady) {
+        // Access the resetDeviceId function
+        const { resetDeviceId } = require('@/app/context/AppContext');
+        await resetDeviceId();
+      }
+    };
+    
+    resetId();
+  }, [isReady]);
+
   if (!loaded || !isReady) {
     return null;
   }

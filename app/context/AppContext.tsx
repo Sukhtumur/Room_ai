@@ -26,10 +26,14 @@ type AppContextType = {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Simple function to generate a random ID without using uuid
+// Replace the simple generateId function with a proper UUID generator
 const generateId = () => {
-  return Math.random().toString(36).substring(2, 15) + 
-         Math.random().toString(36).substring(2, 15);
+  // This creates a UUID v4 format string without using the uuid library
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -65,6 +69,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Fallback to a simple ID if there's an error
       const fallbackId = generateId();
       setDeviceId(fallbackId);
+    }
+  };
+  
+  const resetDeviceId = async () => {
+    try {
+      await AsyncStorage.removeItem('device_id');
+      const newId = generateId();
+      await AsyncStorage.setItem('device_id', newId);
+      setDeviceId(newId);
+      console.log("Device ID reset:", newId);
+    } catch (e) {
+      console.error("Error resetting device ID:", e);
     }
   };
   
